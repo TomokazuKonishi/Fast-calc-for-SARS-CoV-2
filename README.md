@@ -21,4 +21,7 @@ To use this codes,
    
 3. Run the code. It makes boolean of yours and applies the axis that has been made for the sample sequence.
    Here the Brazil samples were located at the far end of negative PC1.
+   
+   
+! I am sorry but I found that both the r-codes and sample sequences are larger than that is allowed by github. I have to find a better way to share them....
 
