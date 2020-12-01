@@ -3,12 +3,12 @@
 # update (2020-12-01)
 A recent version of the axes and the mean data are given, by using data to September.
 
-# RightA: the axes and average data.
-# samples.fas, samples.txt: example for the alignment.
-# Acknowledgments: those for the GISAID. The original sequences can be downloaded.
-# excel files: scores from each continent and figures.
-# sPCbaseSelect.xlsx:  The PC for bases. Those made the axes.
-# figures.zip: sPC_samples for each continent.
+RightA: the axes and average data.
+samples.fas, samples.txt: example for the alignment.
+Acknowledgments: those for the GISAID. The original sequences can be downloaded.
+excel files: scores from each continent and figures.
+sPCbaseSelect.xlsx:  The PC for bases. Those made the axes.
+figures.zip: sPC_samples for each continent.
 
 
 To calculate thousands of sequences will take time.
