@@ -9,26 +9,38 @@ samples.zip
 brazil.txt
  an example aligned file to be classified
  has been aligned to coincide to the sample.fas
+# Applying the axes to your new data.
+
+# RightA: the axes and average data.
+# samples.fas, samples.txt: example for the alignment.
+# Acnowledgements: those for the GISAID. The original sequences can be downloaded.
+# PCsample.zip: scores from each continent and figures.
+# sPCbaseSelect.xlsx:  The PC for bases. Those made the axes.
 
 
-##### code
-# input the .txt file (tab-separated fasta file)
-HA <- read.table(file="brazil.txt",  sep="\t") # here is the example
- 
-HA<-as.matrix(HA)
+# A recent version of the axes and the mean data. 
+# Those were estimated by using data downloaded on 1st Dec 2020. The RightA.rdata includes two files: Righta (axes) and meansa (average data).
+
+##
+# Usage:
+#1.	1.	Prepare aligned DNA sequences that fit the sample sequence. No addition/removal of bases is allowed. (sample.fas)
+#2.	Change the sequence format from fasta to tab-separated text. (sample.txt)
+#3.	Read the text data in the R.
+
+ HA <- read.table(file="xxxxxx.txt",  sep="\t")   # replace xxx to your data's name
+ HA<-as.matrix(HA)
 (n_sample<-dim(HA)[1])
+(n_seq<- nchar(HA[2,2]))
 
-## boolean
-HA_lets <- array(0, dim=c(n_sample, 5*n_seq))
+ HA_lets <- array(0, dim=c(n_sample, 5*n_seq))
   colnames(HA_lets) <- c(paste("A_", 1:n_seq, sep=""),paste("T_", 1:n_seq, sep=""),paste("G_", 1:n_seq, sep=""),paste("C_", 1:n_seq, sep=""),paste("s_", 1:n_seq, sep=""))
 
-
-  ## Ši”[
+#4.	prepareing the boolean 
   for (s in 1:n_sample){
      se <- HA[s, 2]
-     se <- tolower(se)  # a sequence data
+     se <- tolower(se)  # making the boolean vector 
 
-	for (le in  1:n_seq){  # a base
+	for (le in  1:n_seq){  # one by one
 
 	 base <- substr(se, le,le)
  
@@ -51,35 +63,44 @@ HA_lets <- array(0, dim=c(n_sample, 5*n_seq))
 	if(base =="-") {
 	HA_lets[s, le+n_seq*4] <-1
 
-
-}}}}}}}
-
-
-
-
-nameHA<-1:n_sample+NA
-
+          }}}}}}}
 
   rownames(HA_lets) <- HA[,1]
 
+#5.	The sequences may have problems at the first and end.
+#   	Those should be removed.
 
+for(le in c(1:563, 29360:n_seq)){
+ for(l in 1: n_sample){
+	HA_lets[l, le] <-0
+	HA_lets[l, le+n_seq*1] <-0
+	HA_lets[l, le+n_seq*2] <-0
+	HA_lets[l, le+n_seq*3] <-0
+	HA_lets[l, le+n_seq*4] <-1}
+  }
 
-#####
-## PCA
+#6.	set the center of rotation. centering.
 
-## the center was found in the sample data
+  diffs<-sweep(HA_lets, 2, meansa) # difference from the average data.
+  diffs <-diffs/2^0.5  # for the double count
 
-diffs<-sweep(HA_lets , 2, means) # centaring of your data
-diffs<-diffs/2^.5 # double count
+#7. 	if there are "-"s caused by the aligments, the positions should be masked.
 
-# negating indels
   for (s in 1:n_sample){
- Ns <- which(HA_lets[s,1:n_seq+n_seq*4]==1)
-diffs[s, c(Ns, Ns+n_seq,Ns+n_seq*2, Ns+n_seq*3, Ns+n_seq*4)  ] <- 0 }   # indels were exchanged by the mean
+     Ns <- which(HA_lets[s,1:n_seq+n_seq*4]==1)
+     diffs[s, c(Ns, Ns+n_seq,Ns+n_seq*2, Ns+n_seq*3, Ns+n_seq*4)  ] <- 0 }  
+  # estimating that the positions are equals to the average
 
-	sPC_sample_new	 <-	diffs %*%   Right / (n_seq)^0.5   # here we will see PC1-PC3
 
-#####@
+#8.	the number of "-"s should be recorded to find out terrible sequence data
+	 Ns <- apply(HA_lets[,563:29360+n_seq*4], 1, sum)
+
+#9	estimation of sPC for samples (for the first 100 axes)
+	sPC_samplea	 <-	diffs %*%   Righta[, 1:100]  / (n_seq)^0.5 
+	rownames(sPC_samplea)<- HA[,1]
+	write.table(cbind(Ns, sPC_samplea), file="sPC_sample.txt", sep="\t")
+
+#####Â@
 ## output
 
 # to text files
@@ -91,10 +112,10 @@ write.table(rbind(sPC_sample[,1:40],sPC_sample_new[,1:40]) , file="sPC_sample.tx
 png(width=1000, height=1000, pointsize = 36,  file="PCsampleNew.png")
 	 par(lwd=1, mex=0.5, mar=c(5,5,5,.2) )
   plot(sPC_sample[,1], sPC_sample[,2], xlab="PC1", ylab="PC2")
-  text(sPC_sample[833,1], sPC_sample[833,2], labels="œ", col="green2", cex=0.6)
-  text(sPC_sample[1,1], sPC_sample[1,2], labels="œ", col="skyblue", cex=0.6)
+  text(sPC_sample[833,1], sPC_sample[833,2], labels="ÂÅ“", col="green2", cex=0.6)
+  text(sPC_sample[1,1], sPC_sample[1,2], labels="ÂÅ“", col="skyblue", cex=0.6)
 
-  text(sPC_sample_new[ ,1], sPC_sample_new[,2], labels="œ", col="#FF3300", cex=0.7)
+  text(sPC_sample_new[ ,1], sPC_sample_new[,2], labels="ÂÅ“", col="#FF3300", cex=0.7)
 dev.off()
 
 T. Konishi 24May2020
