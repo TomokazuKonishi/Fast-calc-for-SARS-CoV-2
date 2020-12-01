@@ -1,5 +1,9 @@
 # Fast-calc-for-SARS-CoV-2
 
+# update (2020-12-01)
+A recent version of the axes and the mean data are given, by using data to September.
+
+
 To calculate thousands of sequences will take time.
 If your new sequence would be inside the existing framework, 
 and if you wish to classify yours within the framework,
